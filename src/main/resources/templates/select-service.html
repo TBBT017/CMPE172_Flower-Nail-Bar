@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Service – Flower Nail Bar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('Select Service')}"></div>
+
+<main class="page-main">
+    <div class="page-header">
+        <h1 class="page-title">FLOWER NAIL BAR –
+            <span th:text="${location}">SAN JOSE</span></h1>
+        <p class="page-subtitle">Luxury Nail Salon</p>
+    </div>
+
+    <!-- Location Switcher -->
+    <div class="location-switcher">
+        <a th:href="@{/book(location='San Jose')}"
+           th:classappend="${location == 'San Jose'} ? ' active' : ''"
+           class="loc-tab">San Jose</a>
+        <a th:href="@{/book(location='Sunnyvale')}"
+           th:classappend="${location == 'Sunnyvale'} ? ' active' : ''"
+           class="loc-tab">Sunnyvale</a>
+    </div>
+
+    <h2 class="step-title">SELECT SERVICE</h2>
+
+    <!-- Flash error -->
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Service Cards -->
+    <div class="service-grid">
+        <div th:each="service : ${services}"
+             class="service-card"
+             th:onclick="|selectService(${service.id})|"
+             th:id="|service-${service.id}|">
+            <div class="service-name" th:text="${service.name}">Classic Manicure</div>
+            <div class="service-duration" th:text="${service.durationMin} + ' min'">45 min</div>
+            <div class="service-price" th:text="'$' + ${service.price}">$55</div>
+        </div>
+    </div>
+
+    <!-- Hidden form to navigate to next step -->
+    <form id="serviceForm" th:action="@{/book/technician}" method="get">
+        <input type="hidden" name="location" th:value="${location}">
+        <input type="hidden" id="selectedServiceId" name="serviceId" value="">
+    </form>
+
+    <div class="step-actions">
+        <button class="btn-continue" onclick="submitServiceForm()">CONTINUE</button>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script>
+    let selectedServiceId = null;
+
+    function selectService(id) {
+        // Deselect all
+        document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+        // Select clicked
+        document.getElementById('service-' + id).classList.add('selected');
+        selectedServiceId = id;
+        document.getElementById('selectedServiceId').value = id;
+    }
+
+    function submitServiceForm() {
+        if (!selectedServiceId) {
+            alert('Please select a service to continue.');
+            return;
+        }
+        document.getElementById('serviceForm').submit();
+    }
+</script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

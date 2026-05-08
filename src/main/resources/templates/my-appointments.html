@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments – Flower Nail Bar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('My Appointments')}"></div>
+
+<main class="page-main">
+    <div class="page-header">
+        <h1 class="page-title">MY APPOINTMENTS</h1>
+        <p class="page-subtitle" th:if="${currentUser != null}"
+           th:text="${currentUser.fullName} + ' &middot; ' + ${currentUser.email}">Jane &middot; jane@example.com</p>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="search-bar">
+        <a th:href="@{/book}" class="btn-continue" style="margin-left: auto;">&#43; New Booking</a>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="appt-table" th:if="${!#lists.isEmpty(appointments)}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="appt : ${appointments}"
+                    th:classappend="${appt.status == 'CANCELLED'} ? ' row-cancelled' : ''">
+                    <td th:text="${appt.id}">1</td>
+                    <td th:text="${appt.serviceName}">GEL Manicure</td>
+                    <td th:text="${appt.slotDate}">2026-05-09</td>
+                    <td th:text="${appt.slotTime}">11:00 AM</td>
+                    <td th:text="${appt.location}">San Jose</td>
+                    <td th:text="'$' + ${appt.servicePrice}">$65</td>
+                    <td>
+                        <span th:text="${appt.status}"
+                              th:classappend="${appt.status == 'CONFIRMED'} ? ' badge-confirmed' : ' badge-cancelled'"
+                              class="status-badge">CONFIRMED</span>
+                    </td>
+                    <td>
+                        <form th:if="${appt.status == 'CONFIRMED'}"
+                              th:action="@{'/appointments/' + ${appt.id} + '/cancel'}"
+                              method="post"
+                              onsubmit="return confirm('Cancel this appointment?')">
+                            <button type="submit" class="btn-cancel-row">Cancel</button>
+                        </form>
+                        <span th:if="${appt.status != 'CONFIRMED'}" class="text-muted">&mdash;</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(appointments)}" class="empty-state">
+            <div class="empty-icon">&#128197;</div>
+            <p>You haven't booked any appointments yet.</p>
+            <a th:href="@{/book}" class="btn-continue">Book an Appointment</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

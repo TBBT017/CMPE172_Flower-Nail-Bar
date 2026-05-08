@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Technician – Flower Nail Bar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('Select Technician')}"></div>
+
+<main class="page-main">
+    <div class="page-header">
+        <h1 class="page-title">FLOWER NAIL BAR –
+            <span th:text="${location}">SAN JOSE</span></h1>
+        <p class="page-subtitle">Luxury Nail Salon</p>
+    </div>
+
+    <!-- Selected service summary bar -->
+    <div class="selected-service-bar" th:if="${service != null}">
+        <span>&#10003; Service: <strong th:text="${service.name}">GEL Manicure</strong></span>
+        <span th:text="'(' + ${service.durationMin} + ' min · $' + ${service.price} + ')'"></span>
+        <a th:href="@{/book(location=${location})}" class="change-link">Change</a>
+    </div>
+
+    <h2 class="step-title">SELECT TECHNICIAN</h2>
+
+    <!-- Technician Cards -->
+    <div class="service-grid">
+        <div th:each="tech : ${technicians}"
+             class="service-card"
+             th:onclick="|selectTechnician(${tech.id})|"
+             th:id="|tech-${tech.id}|">
+            <div class="service-name" th:text="${tech.name}">Lily</div>
+            <div class="service-duration" th:text="${tech.specialty}">Nail Art &amp; Design</div>
+        </div>
+    </div>
+
+    <p th:if="${technicians == null or #lists.isEmpty(technicians)}"
+       style="text-align:center; color:#888; margin: 2rem 0;">
+        No technicians available at this location.
+    </p>
+
+    <!-- Hidden form to navigate to next step -->
+    <form id="techForm" th:action="@{/book/slots}" method="get">
+        <input type="hidden" name="serviceId" th:value="${service?.id}">
+        <input type="hidden" name="location" th:value="${location}">
+        <input type="hidden" id="selectedTechnicianId" name="technicianId" value="">
+    </form>
+
+    <div class="step-actions">
+        <a th:href="@{/book(location=${location})}" class="btn-back">&#8592; Back</a>
+        <button class="btn-continue" onclick="submitTechForm()">CONTINUE</button>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script>
+    let selectedTechnicianId = null;
+
+    function selectTechnician(id) {
+        document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('tech-' + id).classList.add('selected');
+        selectedTechnicianId = id;
+        document.getElementById('selectedTechnicianId').value = id;
+    }
+
+    function submitTechForm() {
+        if (!selectedTechnicianId) {
+            alert('Please select a technician to continue.');
+            return;
+        }
+        document.getElementById('techForm').submit();
+    }
+</script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

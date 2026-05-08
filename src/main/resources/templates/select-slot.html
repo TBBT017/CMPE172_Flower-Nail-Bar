@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment – Flower Nail Bar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('Book Appointment')}"></div>
+
+<main class="page-main">
+    <div class="page-header">
+        <h1 class="page-title">FLOWER NAIL BAR –
+            <span th:text="${location}">SAN JOSE</span></h1>
+        <p class="page-subtitle">Luxury Nail Salon</p>
+    </div>
+
+    <!-- Selected service + technician summary -->
+    <div class="selected-service-bar" th:if="${service != null}">
+        <span>&#10003; Service: <strong th:text="${service.name}">GEL Manicure</strong></span>
+        <span th:text="'(' + ${service.durationMin} + ' min · $' + ${service.price} + ')'"></span>
+        <span th:if="${technician != null}"> &nbsp;·&nbsp; &#128129; <strong th:text="${technician.name}">Lily</strong></span>
+        <a th:href="@{/book(location=${location})}" class="change-link">Change</a>
+    </div>
+
+    <h2 class="step-title">Book an Appointment</h2>
+
+    <!-- Flash error -->
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="slot-picker-layout">
+        <!-- Calendar (date list) -->
+        <div class="calendar-panel">
+            <div class="calendar-header">&#128197; Select a Date</div>
+            <div class="date-list">
+                <div th:each="d : ${availableDates}"
+                     class="date-item js-date"
+                     th:classappend="${d == selectedDate} ? ' active' : ''"
+                     th:text="${d}"
+                     th:attr="data-date=${d}">
+                </div>
+                <div th:if="${availableDates == null or #lists.isEmpty(availableDates)}"
+                     class="no-dates">No available dates. Check back soon.</div>
+            </div>
+        </div>
+
+        <!-- Time Slot Grid -->
+        <div class="slots-panel">
+            <div class="slots-header">&#128336; Select Time Slot</div>
+            <div class="slots-grid" id="slotsGrid">
+                <div th:each="slot : ${slots}"
+                     class="slot-btn js-slot"
+                     th:classappend="${slot.booked} ? ' booked' : ''"
+                     th:attr="data-slot-id=${slot.id},data-booked=${slot.booked}"
+                     th:title="${slot.booked} ? 'This technician is already booked at this time' : 'Click to select'">
+                    <span class="slot-time" th:text="${slot.slotTime}">10:00 AM</span>
+                    <span class="slot-status" th:if="${slot.booked}">Technician Unavailable</span>
+                </div>
+                <div th:if="${slots == null or #lists.isEmpty(slots)}"
+                     class="no-slots">No slots for this date.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden form -->
+    <form id="slotForm" th:action="@{/book/confirm}" method="get">
+        <input type="hidden" name="serviceId" th:value="${service?.id}">
+        <input type="hidden" name="technicianId" th:value="${technicianId}">
+        <input type="hidden" id="selectedSlotId" name="slotId" value="">
+    </form>
+
+    <div class="step-actions">
+        <a th:href="@{/book/technician(serviceId=${service?.id},location=${location})}" class="btn-back">&#8592; Change Technician</a>
+        <button class="btn-continue" id="continueBtn" type="button">CONTINUE</button>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    (function () {
+        const serviceId    = /*[[${service?.id}]]*/ null;
+        const technicianId = /*[[${technicianId}]]*/ null;
+        const loc          = /*[[${location}]]*/ 'San Jose';
+        let selectedSlotId = null;
+
+        // ── Date click → reload page with new date ───────────────
+        document.querySelectorAll('.js-date').forEach(function (el) {
+            el.addEventListener('click', function () {
+                const date = el.getAttribute('data-date');
+                if (!date || !serviceId) return;
+                let url = '/book/slots?serviceId=' + encodeURIComponent(serviceId)
+                        + '&technicianId=' + encodeURIComponent(technicianId)
+                        + '&location=' + encodeURIComponent(loc)
+                        + '&date=' + encodeURIComponent(date);
+                window.location.href = url;
+            });
+        });
+
+        // ── Slot click → select (skip booked) ────────────────────
+        document.querySelectorAll('.js-slot').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const isBooked = btn.getAttribute('data-booked') === 'true';
+                if (isBooked) return;
+
+                document.querySelectorAll('.js-slot').forEach(function (b) {
+                    b.classList.remove('selected');
+                });
+                btn.classList.add('selected');
+                selectedSlotId = btn.getAttribute('data-slot-id');
+                document.getElementById('selectedSlotId').value = selectedSlotId;
+            });
+        });
+
+        // ── Continue button ──────────────────────────────────────
+        document.getElementById('continueBtn').addEventListener('click', function () {
+            if (!selectedSlotId) {
+                alert('Please select a time slot to continue.');
+                return;
+            }
+            document.getElementById('slotForm').submit();
+        });
+    })();
+    /*]]>*/
+</script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

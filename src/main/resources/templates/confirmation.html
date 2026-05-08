@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed – Flower Nail Bar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('Confirmed')}"></div>
+
+<main class="page-main">
+    <div class="confirmation-container">
+        <div class="confirmation-icon">&#10003;</div>
+        <h1 class="confirmation-title">Appointment Confirmed!</h1>
+        <p class="confirmation-subtitle">
+            A confirmation has been sent to
+            <strong th:text="${appointment.userEmail}">email@example.com</strong>
+        </p>
+
+        <div class="confirmation-card">
+            <div class="conf-row">
+                <span class="conf-label">Appointment #</span>
+                <span class="conf-value" th:text="${appointment.id}">1</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Name</span>
+                <span class="conf-value" th:text="${appointment.userFullName}">Jane Doe</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Service</span>
+                <span class="conf-value" th:text="${appointment.serviceName}">GEL Manicure</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Duration</span>
+                <span class="conf-value" th:text="${appointment.serviceDurationMin} + ' min'">55 min</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Price</span>
+                <span class="conf-value" th:text="'$' + ${appointment.servicePrice}">$65</span>
+            </div>
+            <div class="conf-divider"></div>
+            <div class="conf-row">
+                <span class="conf-label">Date</span>
+                <span class="conf-value" th:text="${appointment.slotDate}">2026-05-09</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Time</span>
+                <span class="conf-value" th:text="${appointment.slotTime}">11:00 AM</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Location</span>
+                <span class="conf-value" th:text="${appointment.location}">San Jose</span>
+            </div>
+            <div class="conf-row" th:if="${appointment.technicianName != null}">
+                <span class="conf-label">Technician</span>
+                <span class="conf-value" th:text="${appointment.technicianName}">Lily</span>
+            </div>
+            <div class="conf-row">
+                <span class="conf-label">Status</span>
+                <span class="conf-value status-confirmed" th:text="${appointment.status}">CONFIRMED</span>
+            </div>
+        </div>
+
+        <div class="confirmation-actions">
+            <a th:href="@{/}" class="btn-continue">&#127968; Back to Home</a>
+            <a th:href="@{/book}" class="btn-back">Book Another</a>
+            <a th:href="@{/appointments}" class="btn-back">View All Appointments</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

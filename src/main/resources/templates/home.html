@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Nail Bar – Luxury Nail Salon</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('Home')}"></div>
+
+<!-- ── Hero Section ─────────────────────────────────── -->
+<section class="hero-section">
+    <div class="hero-badge">2 LOCATIONS ACROSS THE BAY AREA</div>
+    <h1 class="hero-title"><em>Excellence, Every Visit</em></h1>
+    <p class="hero-subtitle">
+        Experience luxury manicures, pedicures, and nail artistry at the Bay Area's most loved nail salon.<br>
+        Book your visit today!
+    </p>
+</section>
+
+<!-- ── Location Cards ───────────────────────────────── -->
+<section class="locations-section">
+    <div class="location-card">
+        <div class="location-info left">
+            <h2 class="location-name">SAN JOSE</h2>
+            <p class="location-phone">408-XXX-XXXX</p>
+            <a th:href="@{/book(location='San Jose')}" class="btn-book">
+                <span class="btn-icon">&#43;</span> BOOK ONLINE
+            </a>
+        </div>
+
+        <div class="location-images">
+            <img th:src="@{/images/sanjose.png}" alt="San Jose Salon" class="salon-photo">
+            <img th:src="@{/images/sunnyvale.jpg}" alt="Sunnyvale Salon" class="salon-photo">
+        </div>
+
+        <div class="location-info right">
+            <h2 class="location-name">SUNNYVALE</h2>
+            <p class="location-phone">408-XXX-XXXX</p>
+            <a th:href="@{/book(location='Sunnyvale')}" class="btn-book">
+                <span class="btn-icon">&#43;</span> BOOK ONLINE
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Quick Links ───────────────────────────────────── -->
+<section class="quick-links-section">
+    <h2 class="section-title">Manage Your Appointments</h2>
+    <div class="quick-links">
+        <a th:href="@{/appointments}" class="quick-card">
+            <div class="quick-icon">&#128197;</div>
+            <div class="quick-label">View All Appointments</div>
+        </a>
+    </div>
+</section>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

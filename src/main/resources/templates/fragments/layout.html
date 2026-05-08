@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ═══════════════════════════════════════════════
+     HEADER FRAGMENT
+     Usage: <div th:replace="~{fragments/layout :: header('Page Title')}"></div>
+     ═══════════════════════════════════════════════ -->
+<header th:fragment="header(pageTitle)">
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="logo-circle">
+                <span>FLOWER<br>NAIL BAR</span>
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">FLOWER NAIL BAR</div>
+                <div class="brand-tagline">Luxury Nail Salon</div>
+            </div>
+        </div>
+
+        <div class="navbar-links">
+            <a th:href="@{/}" class="nav-link">Home</a>
+            <a th:href="@{/book}" class="nav-link">Book</a>
+            <!-- Admin-only link: every customer's bookings -->
+            <a th:if="${currentUser != null and currentUser.admin}"
+               th:href="@{/appointments}" class="nav-link">All Appointments</a>
+
+            <!-- Logged OUT: Sign in button -->
+            <a th:if="${currentUser == null}"
+               th:href="@{/login}"
+               class="nav-link nav-signin">Sign In</a>
+
+            <!-- Logged IN: user chip + dropdown -->
+            <div class="user-menu" id="userMenu" th:if="${currentUser != null}">
+                <button type="button" class="user-chip" id="userChipBtn" aria-haspopup="true" aria-expanded="false">
+                    <span class="user-avatar"
+                          th:text="${currentUser.fullName != null and !#strings.isEmpty(currentUser.fullName)} ? ${#strings.substring(currentUser.fullName, 0, 1)} : 'U'">U</span>
+                    <span th:text="'Hi, ' + ${currentUser.fullName}">Hi, Jane</span>
+                    <span th:if="${currentUser.admin}" class="admin-badge">ADMIN</span>
+                    <span class="user-caret">&#9662;</span>
+                </button>
+
+                <div class="user-dropdown" role="menu">
+                    <div class="user-info">
+                        <div class="user-info-name">
+                            <span th:text="${currentUser.fullName}">Jane Doe</span>
+                            <span th:if="${currentUser.admin}" class="admin-badge">ADMIN</span>
+                        </div>
+                        <div class="user-info-email" th:text="${currentUser.email}">jane@example.com</div>
+                    </div>
+                    <a th:href="@{/my-appointments}" role="menuitem">My Appointments</a>
+                    <a th:if="${currentUser.admin}" th:href="@{/appointments}" role="menuitem">All Appointments (admin)</a>
+                    <a th:href="@{/book}" role="menuitem">Book a New Visit</a>
+                    <form th:action="@{/logout}" method="post" style="margin:0;">
+                        <button type="submit" class="logout-btn" role="menuitem">Sign Out</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="hamburger">&#9776;</div>
+    </nav>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER FRAGMENT
+     ═══════════════════════════════════════════════ -->
+<footer th:fragment="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <strong>FLOWER NAIL BAR</strong><br>
+            <small>Luxury Nail Salon &mdash; Bay Area</small>
+        </div>
+        <div class="footer-links">
+            <span>San Jose: 408-XXX-XXXX</span>
+            <span>&nbsp;&bull;&nbsp;</span>
+            <span>Sunnyvale: 408-XXX-XXXX</span>
+        </div>
+    </div>
+</footer>
+
+</html>

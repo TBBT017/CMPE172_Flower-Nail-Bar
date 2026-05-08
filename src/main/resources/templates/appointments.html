@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments – Flower Nail Bar</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/layout :: header('Appointments')}"></div>
+
+<main class="page-main">
+    <div class="page-header">
+        <h1 class="page-title">ALL APPOINTMENTS <span class="admin-only-tag">ADMIN</span></h1>
+        <p class="page-subtitle">Every customer's bookings &mdash; visible to admins only.</p>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <!-- Search by email -->
+    <div class="search-bar">
+        <form th:action="@{/appointments}" method="get" class="search-form">
+            <input type="email" name="email" class="search-input"
+                   placeholder="Search by customer email..."
+                   th:value="${searchEmail}">
+            <button type="submit" class="btn-search">Search</button>
+            <a th:href="@{/appointments}" class="btn-clear">Clear</a>
+        </form>
+        <a th:href="@{/book}" class="btn-continue" style="margin-left: auto;">&#43; New Booking</a>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="table-wrapper">
+        <table class="appt-table" th:if="${!#lists.isEmpty(appointments)}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="appt : ${appointments}"
+                    th:classappend="${appt.status == 'CANCELLED'} ? ' row-cancelled' : ''">
+                    <td th:text="${appt.id}">1</td>
+                    <td th:text="${appt.userFullName}">Jane Doe</td>
+                    <td th:text="${appt.userEmail}">jane@example.com</td>
+                    <td th:text="${appt.serviceName}">GEL Manicure</td>
+                    <td th:text="${appt.slotDate}">2026-05-09</td>
+                    <td th:text="${appt.slotTime}">11:00 AM</td>
+                    <td th:text="${appt.location}">San Jose</td>
+                    <td>
+                        <span th:text="${appt.status}"
+                              th:classappend="${appt.status == 'CONFIRMED'} ? ' badge-confirmed' : ' badge-cancelled'"
+                              class="status-badge">CONFIRMED</span>
+                    </td>
+                    <td>
+                        <form th:if="${appt.status == 'CONFIRMED'}"
+                              th:action="@{'/appointments/' + ${appt.id} + '/cancel'}"
+                              method="post"
+                              onsubmit="return confirm('Cancel this appointment?')">
+                            <button type="submit" class="btn-cancel-row">Cancel</button>
+                        </form>
+                        <span th:if="${appt.status != 'CONFIRMED'}" class="text-muted">—</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(appointments)}" class="empty-state">
+            <div class="empty-icon">&#128197;</div>
+            <p>No appointments found.</p>
+            <a th:href="@{/book}" class="btn-continue">Book an Appointment</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
